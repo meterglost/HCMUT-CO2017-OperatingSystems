@@ -87,9 +87,7 @@ static int translate(
 			 * to [p_index] field of page_table->table[i] to 
 			 * produce the correct physical address and save it to
 			 * [*physical_addr]  */
-
-
-			
+			*physical_addr = ((page_table->table[i].p_index) << OFFSET_LEN) + offset; // READ UNDERSTAND
 			return 1;
 		}
 	}
@@ -141,10 +139,29 @@ int free_mem(addr_t address, struct pcb_t * proc) {
 	 * 	  the process [proc].
 	 * 	- Remember to use lock to protect the memory from other
 	 * 	  processes.  */
+	// READ UNDERSTAND
+	pthread_mutex_lock(&mem_lock);	
+	int num_pages = 0;					// Number of pages we will use
+	addr_t physical_addr;
+	addr_t virtual_addr = address;
+	int i;
+	if(translate(address,&physical_addr,proc)){	// check address is valid and get physical_addr
+		addr_t physical_page=physical_addr>>OFFSET_LEN;
 
-
-
-	
+		while(physical_page!=-1){
+			_mem_stat[physical_page].proc=0;
+			addr_t segIndex = get_first_lv(virtual_addr);
+			for (i = 0; i < proc->seg_table->table[segIndex].pages->size; i++) 
+				if (proc->seg_table->table[segIndex].pages->table[i].p_index == physical_page) {
+					proc->seg_table->table[segIndex].pages->table[i].v_index = 0;
+					proc->seg_table->table[segIndex].pages->table[i].p_index = 0;
+			}
+			physical_page=_mem_stat[physical_page].next;
+			virtual_addr+=PAGE_SIZE;
+		}
+	}
+	pthread_mutex_unlock(&mem_lock);
+	// READ UNDERSTAND
 	return 0;
 }
 
