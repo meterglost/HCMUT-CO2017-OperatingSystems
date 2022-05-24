@@ -87,7 +87,7 @@ static int translate(
 			 * to [p_index] field of page_table->table[i] to 
 			 * produce the correct physical address and save it to
 			 * [*physical_addr]  */
-			*physical_addr = ((page_table->table[i].p_index) << OFFSET_LEN) + offset; // READ UNDERSTAND
+			*physical_addr = ((page_table->table[i].p_index) << OFFSET_LEN) + offset;
 			return 1;
 		}
 	}
@@ -139,7 +139,6 @@ int free_mem(addr_t address, struct pcb_t * proc) {
 	 * 	  the process [proc].
 	 * 	- Remember to use lock to protect the memory from other
 	 * 	  processes.  */
-	// READ UNDERSTAND
 	pthread_mutex_lock(&mem_lock);
 
 	int nextIdx = 0;
@@ -171,7 +170,6 @@ int free_mem(addr_t address, struct pcb_t * proc) {
 	}
 	
 	pthread_mutex_unlock(&mem_lock);
-	// READ UNDERSTAND
 	return 0;
 }
 
